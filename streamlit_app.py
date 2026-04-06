@@ -1,39 +1,45 @@
+# Import python packages
 import streamlit as st
-from snowflake.snowpark.context import get_active_session
+
+# Write directly to the app
+st.title(":cup_with_straw: Customize Your Smoothie! :cup_with_straw:")
+st.write(
+    """Choose the fruits you want in your custom Smoothie!
+    """
+)
+
 from snowflake.snowpark.functions import col
+cnx = st.connection("snowflake")
+session = cnx.session()
+my_dataframe = session.table("smoothies.public.fruit_options").select(col('FRUIT_NAME'))
+# st.dataframe(data=my_dataframe, use_container_width=True)
 
-st.title("🥤 Pending Smoothie Orders")
+name_on_order = st.text_input('Name on Smoothie:')
+st.write('The name on your Smoothie will be:', name_on_order)
 
-session = get_active_session()
+list_ing = st.multiselect(
+    'Choose top 5', my_dataframe
+)
 
-# Get pending orders
-my_dataframe = session.table("smoothies.public.orders") \
-    .filter(col("ORDER_FILLED") == False) \
-    .to_pandas()
+if list_ing:
 
-# Normalize column names
-my_dataframe.columns = [c.upper() for c in my_dataframe.columns]
+    ing_str = ''
 
-# Show editable table
-edited_df = st.data_editor(my_dataframe, use_container_width=True)
+    for i in list_ing:
+        ing_str+=i + ' '
+    st.write(ing_str)
 
-# Save button
-if st.button("Save Changes"):
+    my_insert_stmt = f"""
+    INSERT INTO smoothies.public.orders (ingredients, name_on_order)
+    VALUES ('{ing_str}', '{name_on_order}')
+    """
 
-    for index, row in edited_df.iterrows():
+    # st.write(my_insert_stmt)
+    click = st.button('submit')
 
-        if row["ORDER_FILLED"] == True:
+    if click:
+        session.sql(my_insert_stmt).collect()
+        st.success('Your Smoothie is ordered!', icon="✅")
 
-            order_uid = row["ORDER_UID"]
 
-            # ✅ FIX: use f-string instead of %s
-            update_query = f"""
-            UPDATE smoothies.public.orders
-            SET ORDER_FILLED = TRUE
-            WHERE ORDER_UID = {order_uid}
-            """
 
-            session.sql(update_query).collect()
-
-    st.success("Orders updated successfully!")
-    st.rerun()
