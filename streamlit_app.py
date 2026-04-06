@@ -27,8 +27,9 @@ if list_ing:
 
     for i in list_ing:
         ing_str+=i + ' '
+        st.subheader(i +'Nutrition Information')
         smoothiefroot_response = requests.get(
-        "https://my.smoothiefroot.com/api/fruit/watermelon")
+        "https://my.smoothiefroot.com/api/fruit/"+i)
         df = st.dataframe(data =smoothiefroot_response.json(), use_container_width=True )
     # st.write(ing_str)
 
@@ -50,7 +51,7 @@ smoothiefroot_response = requests.get(
 )
 
 
-st.text(smoothiefroot_response)
+
 
 
 
