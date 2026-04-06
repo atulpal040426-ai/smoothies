@@ -42,7 +42,7 @@ if list_ing:
         st.success('Your Smoothie is ordered!', icon="✅")
 
 import requests  
-response = requests.get(
+smoothiefroot_response = requests.get(
     "https://my.smoothiefroot.com/api/fruit/watermelon"
 )
 
