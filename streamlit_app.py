@@ -36,7 +36,7 @@ if list_ing:
 
     for i in list_ing:
         ing_str+=i + ' '
-        search_on = pd_df.loc[pd_df['FRUIT_NAME'] == fruit_chosen,'SEARCH_ON'].iloc[0]
+        search_on = pd_df.loc[pd_df['FRUIT_NAME'] == i,'SEARCH_ON'].iloc[0]
         
         st.subheader(i +'Nutrition Information')
         smoothiefroot_response = requests.get(
