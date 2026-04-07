@@ -36,9 +36,11 @@ if list_ing:
 
     for i in list_ing:
         ing_str+=i + ' '
+        search_on = pd_df.loc[pd_df['FRUIT_NAME'] == fruit_chosen,'SEARCH_ON'].iloc[0]
+        
         st.subheader(i +'Nutrition Information')
         smoothiefroot_response = requests.get(
-        "https://my.smoothiefroot.com/api/fruit/"+i)
+        "https://my.smoothiefroot.com/api/fruit/"+search_on)
         df = st.dataframe(data =smoothiefroot_response.json(), use_container_width=True )
     # st.write(ing_str)
 
